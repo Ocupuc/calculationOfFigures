@@ -2,10 +2,10 @@ package ru.ocupuc.triangle.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.ocupuc.triangle.FigureDTO;
 import ru.ocupuc.triangle.FigureFactory;
+import ru.ocupuc.triangle.dto.FigureDTO;
 import ru.ocupuc.triangle.models.GeometricFigure;
-import ru.ocupuc.triangle.models.Triangle;
+import ru.ocupuc.triangle.models.HeightCalculable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,15 +52,15 @@ public class FigureController {
         return ResponseEntity.ok(figureName);
     }
 
-    @PostMapping("/calculateHeight")
-    public ResponseEntity<Double> calculateHeight(@RequestBody FigureDTO figureDTO) {
+    @PostMapping("/calculateHeights")
+    public ResponseEntity<double[]> calculateHeights(@RequestBody FigureDTO figureDTO) {
         GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null || !(figure instanceof Triangle)) {
+        if (figure == null || !(figure instanceof HeightCalculable)) {
             return ResponseEntity.badRequest().build();
         }
-        Triangle triangle = (Triangle) figure;
-        double height = triangle.calculateHeight();
-        return ResponseEntity.ok(height);
+        HeightCalculable heightCalculableFigure = (HeightCalculable) figure;
+        double[] heights = heightCalculableFigure.calculateHeights();
+        return ResponseEntity.ok(heights);
     }
 
     // Другие методы для треугольников и других фигур по мере добавления...

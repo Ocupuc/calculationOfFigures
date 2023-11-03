@@ -1,4 +1,4 @@
-package ru.ocupuc.triangle;
+package ru.ocupuc.triangle.dto;
 
 import lombok.*;
 

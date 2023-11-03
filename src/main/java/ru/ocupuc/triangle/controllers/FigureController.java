@@ -7,12 +7,20 @@ import ru.ocupuc.triangle.FigureFactory;
 import ru.ocupuc.triangle.models.GeometricFigure;
 import ru.ocupuc.triangle.models.Triangle;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/figures")
 public class FigureController {
 
+    private static final List<String> availableFigures = Arrays.asList("triangle", "parallelogram");
 
+    @GetMapping("/available")
+    public ResponseEntity<List<String>> getAvailableFigures() {
+        return ResponseEntity.ok(availableFigures);
+    }
 
     @PostMapping("/calculateArea")
     public ResponseEntity<Double> calculateArea(@RequestBody FigureDTO figureDTO) {

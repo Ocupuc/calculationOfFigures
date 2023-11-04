@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.ocupuc.triangle.FigureFactory;
 import ru.ocupuc.triangle.models.GeometricFigure;
 import ru.ocupuc.triangle.models.HeightCalculable;
-import ru.ocupuc.triangle.models.Triangle;
 import ru.ocupuc.triangle.dto.FigureDTO;
+import javax.validation.Valid;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,60 +25,63 @@ public class FigureController {
 
     // Вычисление площади фигуры
     @PostMapping("/calculateArea")
-    public ResponseEntity<Double> calculateArea(@RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null) {
+    public ResponseEntity<Double> calculateArea(@Valid @RequestBody FigureDTO figureDTO) {
+        try {
+            GeometricFigure figure = getFigureFromDTO(figureDTO);
+            double area = figure.calculateArea();
+            return ResponseEntity.ok(area);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-        double area = figure.calculateArea();
-        return ResponseEntity.ok(area);
     }
 
     // Вычисление периметра фигуры
     @PostMapping("/calculatePerimeter")
-    public ResponseEntity<Double> calculatePerimeter(@RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null) {
+    public ResponseEntity<Double> calculatePerimeter(@Valid @RequestBody FigureDTO figureDTO) {
+        try {
+            GeometricFigure figure = getFigureFromDTO(figureDTO);
+            double perimeter = figure.calculatePerimeter();
+            return ResponseEntity.ok(perimeter);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-        double perimeter = figure.calculatePerimeter();
-        return ResponseEntity.ok(perimeter);
     }
 
     // Определение типа фигуры
     @PostMapping("/identifyFigure")
-    public ResponseEntity<String> identifyFigure(@RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null) {
+    public ResponseEntity<String> identifyFigure(@Valid @RequestBody FigureDTO figureDTO) {
+        try {
+            GeometricFigure figure = getFigureFromDTO(figureDTO);
+            String figureName = figure.identifyFigure();
+            return ResponseEntity.ok(figureName);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-        String figureName = figure.identifyFigure();
-        return ResponseEntity.ok(figureName);
     }
 
     // Вычисление высот фигуры
     @PostMapping("/calculateHeights")
-    public ResponseEntity<double[]> calculateHeights(@RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null || !(figure instanceof HeightCalculable)) {
+    public ResponseEntity<double[]> calculateHeights(@Valid @RequestBody FigureDTO figureDTO) {
+        try {
+            GeometricFigure figure = getFigureFromDTO(figureDTO);
+            if (!(figure instanceof HeightCalculable)) {
+                throw new IllegalArgumentException();
+            }
+            HeightCalculable heightCalculableFigure = (HeightCalculable) figure;
+            double[] heights = heightCalculableFigure.calculateHeights();
+            return ResponseEntity.ok(heights);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-        HeightCalculable heightCalculableFigure = (HeightCalculable) figure;
-        double[] heights = heightCalculableFigure.calculateHeights();
-        return ResponseEntity.ok(heights);
     }
 
-    // Определение типа треугольника
-    @PostMapping("/determineTriangleType")
-    public ResponseEntity<String> determineTriangleType(@RequestBody FigureDTO figureDTO) {
+    // Приватный метод для создания фигуры из DTO
+    private GeometricFigure getFigureFromDTO(FigureDTO figureDTO) {
         GeometricFigure figure = FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-        if (figure == null || !(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().build();
+        if (figure == null) {
+            throw new IllegalArgumentException("Фигура не может быть создана");
         }
-        Triangle triangle = (Triangle) figure;
-        String type = triangle.determineTriangleType();
-        return ResponseEntity.ok(type);
+        return figure;
     }
 
-    // Добавьте здесь другие методы для треугольников, если они понадобятся
 }

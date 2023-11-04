@@ -8,25 +8,30 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
     private double sideB;
     private double sideC;
 
-    // Ленивая инициализация для площади, чтобы не пересчитывать её каждый раз
-    private Double area;
-    // Ленивая инициализация для полупериметра, чтобы не пересчитывать его каждый раз
-    private Double semiPerimeter;
+    // Кеширование вычисленных значений
+    private Double area = null;
+    private Double semiPerimeter = null;
+    private String triangleType = null;
 
-    // Конструктор для создания экземпляра треугольника с заданными сторонами
+    // Конструктор для инициализации сторон треугольника
     public Triangle(double sideA, double sideB, double sideC) {
-        if (sideA <= 0 || sideB <= 0 || sideC <= 0) {
-            throw new IllegalArgumentException("Стороны треугольника должны быть положительными числами.");
-        }
-        if (sideA >= sideB + sideC || sideB >= sideA + sideC || sideC >= sideA + sideB) {
-            throw new IllegalArgumentException("Сумма длин любых двух сторон должна быть больше длины третьей стороны.");
-        }
+        validateSides(sideA, sideB, sideC);
         this.sideA = sideA;
         this.sideB = sideB;
         this.sideC = sideC;
     }
 
-    // Метод для расчета полупериметра
+    // Валидация сторон треугольника
+    private void validateSides(double a, double b, double c) {
+        if (a <= 0 || b <= 0 || c <= 0) {
+            throw new IllegalArgumentException("Стороны должны быть положительными числами.");
+        }
+        if (a >= b + c || b >= a + c || c >= a + b) {
+            throw new IllegalArgumentException("Сумма двух сторон должна быть больше третьей.");
+        }
+    }
+
+    // Расчет полупериметра с кешированием результата
     private double calculateSemiPerimeter() {
         if (semiPerimeter == null) {
             semiPerimeter = (sideA + sideB + sideC) / 2;
@@ -34,7 +39,7 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
         return semiPerimeter;
     }
 
-    // Метод для расчета площади треугольника по формуле Герона
+    // Расчет площади с кешированием результата
     @Override
     public double calculateArea() {
         if (area == null) {
@@ -44,98 +49,83 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
         return area;
     }
 
-    // Метод для расчета периметра треугольника
+    // Расчет периметра треугольника
     @Override
     public double calculatePerimeter() {
         return sideA + sideB + sideC;
     }
 
-    // Метод для идентификации фигуры
+    // Определение фигуры
     @Override
     public String identifyFigure() {
         return "Треугольник";
     }
 
-    // Метод для расчета высот треугольника
+    // Расчет высот треугольника
     @Override
     public double[] calculateHeights() {
         double area = calculateArea();
-        // Возвращаем массив высот для каждой стороны
         return new double[]{
-                (2 * area) / sideA,
-                (2 * area) / sideB,
-                (2 * area) / sideC
+                2 * area / sideA,
+                2 * area / sideB,
+                2 * area / sideC
         };
     }
 
-    // Метод для определения типа треугольника
+    // Определение типа треугольника с кешированием результата
     public String determineTriangleType() {
-        // Определение типа треугольника на основе длин его сторон
-        if (sideA == sideB && sideB == sideC) {
-            return "Равносторонний треугольник";
-        } else if (sideA == sideB || sideA == sideC || sideB == sideC) {
-            return "Равнобедренный треугольник";
-        } else {
-            // Проверяем на прямоугольность один раз и сохраняем результат
-            boolean isRightTriangle = isRightAngle(sideA, sideB, sideC) ||
+        if (triangleType == null) {
+            if (sideA == sideB && sideB == sideC) {
+                triangleType = "Равносторонний треугольник";
+            } else if (sideA == sideB || sideA == sideC || sideB == sideC) {
+                triangleType = "Равнобедренный треугольник";
+            } else if (isRightAngle(sideA, sideB, sideC) ||
                     isRightAngle(sideA, sideC, sideB) ||
-                    isRightAngle(sideB, sideC, sideA);
-            if (isRightTriangle) {
-                return "Прямоугольный треугольник";
+                    isRightAngle(sideB, sideC, sideA)) {
+                triangleType = "Прямоугольный треугольник";
             } else {
-                return "Разносторонний треугольник";
+                triangleType = "Разносторонний треугольник";
             }
         }
+        return triangleType;
     }
 
-
-    // Вспомогательный метод для проверки, является ли треугольник прямоугольным
+    // Проверка на прямоугольность треугольника
     private boolean isRightAngle(double side1, double side2, double side3) {
-        // Проверка на прямоугольность по теореме Пифагора
-        return pow(side1, 2) + pow(side2, 2) == pow(side3, 2);
+        return abs(side1 * side1 + side2 * side2 - side3 * side3) < 1e-10;
     }
 
-    // Метод для расчета площади вписанной окружности
+    // Расчет площади вписанной окружности
     public double calculateInscribedCircleArea() {
-        double semiPerimeter = calculateSemiPerimeter(); // Используем существующий метод
-        double radius = calculateArea() / semiPerimeter;
-        return PI * pow(radius, 2);
+        double radius = calculateArea() / calculateSemiPerimeter();
+        return PI * radius * radius;
     }
 
-    // Метод для расчета площади описанной окружности
+    // Расчет площади описанной окружности
     public double calculateCircumscribedCircleArea() {
-        // Используем уже вычисленный тип треугольника
-        String triangleType = determineTriangleType();
-
-        if ("Прямоугольный треугольник".equals(triangleType)) {
-            // Находим гипотенузу, используя Math.max один раз для упрощения чтения
-            double hypotenuse = Math.max(Math.max(sideA, sideB), sideC);
-            return PI * pow(hypotenuse / 2, 2);
+        if ("Прямоугольный треугольник".equals(determineTriangleType())) {
+            double hypotenuse = max(max(sideA, sideB), sideC);
+            return PI * (hypotenuse / 2) * (hypotenuse / 2);
         } else {
-            // Для непрямоугольных треугольников используем формулу радиуса описанной окружности
-            double area = calculateArea(); // используем уже имеющийся метод calculateArea
+            double area = calculateArea();
             double radius = (sideA * sideB * sideC) / (4 * area);
-            return PI * pow(radius, 2);
+            return PI * radius * radius;
         }
     }
 
-
-    // Метод для расчета длины медианы для одной из сторон
+    // Расчет длины медианы
     public double calculateMedian(double side) {
         double[] otherSides = getOtherSides(side);
-        return 0.5 * sqrt(2 * pow(otherSides[0], 2) + 2 * pow(otherSides[1], 2) - pow(side, 2));
+        return 0.5 * sqrt(2 * otherSides[0] * otherSides[0] + 2 * otherSides[1] * otherSides[1] - side * side);
     }
 
-    // Метод для расчета длины биссектрисы для одной из сторон
+    // Расчет длины биссектрисы
     public double calculateBisector(double side) {
         double[] otherSides = getOtherSides(side);
         return sqrt(otherSides[0] * otherSides[1] * (otherSides[0] + otherSides[1] + side) * (otherSides[0] + otherSides[1] - side)) / (otherSides[0] + otherSides[1]);
     }
 
-
-
-
-    // Метод для расчета всех медиан треугольника
+    // Расчет всех медиан треугольника
     public double[] calculateAllMedians() {
         return new double[]{
                 calculateMedian(sideA),
@@ -144,7 +134,7 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
         };
     }
 
-    // Метод для расчета всех биссектрис треугольника
+    // Расчет всех биссектрис треугольника
     public double[] calculateAllBisectors() {
         return new double[]{
                 calculateBisector(sideA),
@@ -152,21 +142,15 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
                 calculateBisector(sideC)
         };
     }
-    //метод для расчета бессектрис и медиан
+
+    // Получение двух других сторон треугольника
     private double[] getOtherSides(double side) {
-        double[] otherSides = new double[2];
         if (side == sideA) {
-            otherSides[0] = sideB;
-            otherSides[1] = sideC;
+            return new double[]{sideB, sideC};
         } else if (side == sideB) {
-            otherSides[0] = sideA;
-            otherSides[1] = sideC;
-        } else if (side == sideC) {
-            otherSides[0] = sideA;
-            otherSides[1] = sideB;
+            return new double[]{sideA, sideC};
+        } else {
+            return new double[]{sideA, sideB};
         }
-        return otherSides;
     }
-
-
 }

@@ -112,45 +112,33 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
             return PI * radius * radius;
         }
     }
-
-    // Расчет длины медианы
-    public double calculateMedian(double side) {
-        double[] otherSides = getOtherSides(side);
-        return 0.5 * sqrt(2 * otherSides[0] * otherSides[0] + 2 * otherSides[1] * otherSides[1] - side * side);
-    }
-
-    // Расчет длины биссектрисы
-    public double calculateBisector(double side) {
-        double[] otherSides = getOtherSides(side);
-        return sqrt(otherSides[0] * otherSides[1] * (otherSides[0] + otherSides[1] + side) * (otherSides[0] + otherSides[1] - side)) / (otherSides[0] + otherSides[1]);
+    // Расчет длины медианы для стороны c
+    public double calculateMedianLength(double a, double b, double c) {
+        return 0.5 * sqrt(2 * (a * a) + 2 * (b * b) - (c * c));
     }
 
     // Расчет всех медиан треугольника
     public double[] calculateAllMedians() {
         return new double[]{
-                calculateMedian(sideA),
-                calculateMedian(sideB),
-                calculateMedian(sideC)
+                calculateMedianLength(sideB, sideC, sideA),
+                calculateMedianLength(sideA, sideC, sideB),
+                calculateMedianLength(sideA, sideB, sideC)
         };
+    }
+
+    // Расчет длины биссектрисы для стороны c
+    public double calculateBisectorLength(double a, double b, double c) {
+        double p = calculateSemiPerimeter();
+        return (2 * sqrt(a * b * p * (p - c))) / (a + b);
     }
 
     // Расчет всех биссектрис треугольника
     public double[] calculateAllBisectors() {
         return new double[]{
-                calculateBisector(sideA),
-                calculateBisector(sideB),
-                calculateBisector(sideC)
+                calculateBisectorLength(sideA, sideB, sideC),
+                calculateBisectorLength(sideA, sideC, sideB),
+                calculateBisectorLength(sideB, sideC, sideA)
         };
     }
 
-    // Получение двух других сторон треугольника
-    private double[] getOtherSides(double side) {
-        if (side == sideA) {
-            return new double[]{sideB, sideC};
-        } else if (side == sideB) {
-            return new double[]{sideA, sideC};
-        } else {
-            return new double[]{sideA, sideB};
-        }
-    }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.ocupuc.triangle.FigureFactory;
 import ru.ocupuc.triangle.dto.FigureDTO;
 import ru.ocupuc.triangle.models.GeometricFigure;
-import ru.ocupuc.triangle.models.Triangle;
+import ru.ocupuc.triangle.models.impl.Triangle;
 
 import javax.validation.Valid;
 
@@ -24,7 +24,7 @@ public class TriangleController {
         GeometricFigure figure = createFigureFromDTO(figureDTO);
 
         if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник..");
+            return ResponseEntity.badRequest().body("Не допустимый треугольник для определения типа треугольника.");
         }
 
         Triangle triangle = (Triangle) figure;
@@ -39,7 +39,8 @@ public class TriangleController {
         GeometricFigure figure = createFigureFromDTO(figureDTO);
 
         if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник.");
+            return ResponseEntity.badRequest().body("Не допустимый " +
+                    "треугольник для расчета площади описанной окружности треугольника.");
         }
 
         Triangle triangle = (Triangle) figure;
@@ -52,7 +53,8 @@ public class TriangleController {
         GeometricFigure figure = createFigureFromDTO(figureDTO);
 
         if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник для расчёта площади вписанной окружности.");
+            return ResponseEntity.badRequest().body("Не допустимый " +
+                    "треугольник для расчёта площади вписанной окружности.");
         }
 
         Triangle triangle = (Triangle) figure;
@@ -66,7 +68,7 @@ public class TriangleController {
         GeometricFigure figure = createFigureFromDTO(figureDTO);
 
         if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник.");
+            return ResponseEntity.badRequest().body("Не допустимый треугольник для расчета длин медиан треугольника.");
         }
 
         Triangle triangle = (Triangle) figure;
@@ -80,7 +82,7 @@ public class TriangleController {
         GeometricFigure figure = createFigureFromDTO(figureDTO);
 
         if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник.");
+            return ResponseEntity.badRequest().body("Не допустимый треугольник для расчета длин биссектрис треугольника.");
         }
 
         Triangle triangle = (Triangle) figure;

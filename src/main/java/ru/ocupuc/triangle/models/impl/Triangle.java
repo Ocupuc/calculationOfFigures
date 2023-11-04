@@ -1,24 +1,21 @@
-package ru.ocupuc.triangle.models;
+package ru.ocupuc.triangle.models.impl;
+
+import ru.ocupuc.triangle.models.HeightCalculable;
+import ru.ocupuc.triangle.models.Polygon;
 
 import static java.lang.Math.*;
 
-public class Triangle extends GeometricFigure implements HeightCalculable {
-    // Стороны треугольника
-    private double sideA;
-    private double sideB;
-    private double sideC;
+public class Triangle extends Polygon implements HeightCalculable {
 
     // Кеширование вычисленных значений
     private Double area = null;
     private Double semiPerimeter = null;
     private String triangleType = null;
 
-    // Конструктор для инициализации сторон треугольника
-    public Triangle(double sideA, double sideB, double sideC) {
-        validateSides(sideA, sideB, sideC);
-        this.sideA = sideA;
-        this.sideB = sideB;
-        this.sideC = sideC;
+    // Конструктор принимает массив длин сторон треугольника
+    public Triangle(double[] sidesLengths) {
+        super(3, sidesLengths);
+        validateSides(sidesLengths[0], sidesLengths[1], sidesLengths[2]);
     }
 
     // Валидация сторон треугольника
@@ -32,9 +29,13 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
     }
 
     // Расчет полупериметра с кешированием результата
-    private double calculateSemiPerimeter() {
+    public double calculateSemiPerimeter() {
         if (semiPerimeter == null) {
-            semiPerimeter = (sideA + sideB + sideC) / 2;
+            semiPerimeter = 0.0;
+            for (double side : getSidesLengths()) {
+                semiPerimeter += side;
+            }
+            semiPerimeter /= 2;
         }
         return semiPerimeter;
     }
@@ -44,7 +45,7 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
     public double calculateArea() {
         if (area == null) {
             double s = calculateSemiPerimeter();
-            area = sqrt(s * (s - sideA) * (s - sideB) * (s - sideC));
+            area = sqrt(s * (s - getSidesLengths()[0]) * (s - getSidesLengths()[1]) * (s - getSidesLengths()[2]));
         }
         return area;
     }
@@ -52,7 +53,7 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
     // Расчет периметра треугольника
     @Override
     public double calculatePerimeter() {
-        return sideA + sideB + sideC;
+        return calculateSemiPerimeter() * 2;
     }
 
     // Определение фигуры
@@ -66,22 +67,23 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
     public double[] calculateHeights() {
         double area = calculateArea();
         return new double[]{
-                2 * area / sideA,
-                2 * area / sideB,
-                2 * area / sideC
+                2 * area / getSidesLengths()[0],
+                2 * area / getSidesLengths()[1],
+                2 * area / getSidesLengths()[2]
         };
     }
 
     // Определение типа треугольника с кешированием результата
     public String determineTriangleType() {
         if (triangleType == null) {
-            if (sideA == sideB && sideB == sideC) {
+            double[] sides = getSidesLengths();
+            if (sides[0] == sides[1] && sides[1] == sides[2]) {
                 triangleType = "Равносторонний треугольник";
-            } else if (sideA == sideB || sideA == sideC || sideB == sideC) {
+            } else if (sides[0] == sides[1] || sides[0] == sides[2] || sides[1] == sides[2]) {
                 triangleType = "Равнобедренный треугольник";
-            } else if (isRightAngle(sideA, sideB, sideC) ||
-                    isRightAngle(sideA, sideC, sideB) ||
-                    isRightAngle(sideB, sideC, sideA)) {
+            } else if (isRightAngle(sides[0], sides[1], sides[2]) ||
+                    isRightAngle(sides[0], sides[2], sides[1]) ||
+                    isRightAngle(sides[1], sides[2], sides[0])) {
                 triangleType = "Прямоугольный треугольник";
             } else {
                 triangleType = "Разносторонний треугольник";
@@ -103,15 +105,17 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
 
     // Расчет площади описанной окружности
     public double calculateCircumscribedCircleArea() {
+        double[] sides = getSidesLengths();
         if ("Прямоугольный треугольник".equals(determineTriangleType())) {
-            double hypotenuse = max(max(sideA, sideB), sideC);
+            double hypotenuse = max(max(sides[0], sides[1]), sides[2]);
             return PI * (hypotenuse / 2) * (hypotenuse / 2);
         } else {
             double area = calculateArea();
-            double radius = (sideA * sideB * sideC) / (4 * area);
+            double radius = (sides[0] * sides[1] * sides[2]) / (4 * area);
             return PI * radius * radius;
         }
     }
+
     // Расчет длины медианы для стороны c
     public double calculateMedianLength(double a, double b, double c) {
         return 0.5 * sqrt(2 * (a * a) + 2 * (b * b) - (c * c));
@@ -119,10 +123,11 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
 
     // Расчет всех медиан треугольника
     public double[] calculateAllMedians() {
+        double[] sides = getSidesLengths();
         return new double[]{
-                calculateMedianLength(sideB, sideC, sideA),
-                calculateMedianLength(sideA, sideC, sideB),
-                calculateMedianLength(sideA, sideB, sideC)
+                calculateMedianLength(sides[1], sides[2], sides[0]),
+                calculateMedianLength(sides[0], sides[2], sides[1]),
+                calculateMedianLength(sides[0], sides[1], sides[2])
         };
     }
 
@@ -134,10 +139,11 @@ public class Triangle extends GeometricFigure implements HeightCalculable {
 
     // Расчет всех биссектрис треугольника
     public double[] calculateAllBisectors() {
+        double[] sides = getSidesLengths();
         return new double[]{
-                calculateBisectorLength(sideA, sideB, sideC),
-                calculateBisectorLength(sideA, sideC, sideB),
-                calculateBisectorLength(sideB, sideC, sideA)
+                calculateBisectorLength(sides[0], sides[1], sides[2]),
+                calculateBisectorLength(sides[0], sides[2], sides[1]),
+                calculateBisectorLength(sides[1], sides[2], sides[0])
         };
     }
 

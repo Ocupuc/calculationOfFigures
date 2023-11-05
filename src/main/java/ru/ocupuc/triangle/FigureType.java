@@ -9,6 +9,9 @@ public enum FigureType {
     TRIANGLE("Треугольник"),
     CIRCLE("Круг"),
     RECTANGLE("Прямоугольник"),
-    SQUARE("Квадратик");
+    SQUARE("Квадратик"),
+    TRAPEZOID("Трапеция"),
+    PARALLELOGRAM("Параллелограм"),
+    RHOMBUS("Ромб");
     String name;
 }

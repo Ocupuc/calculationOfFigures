@@ -1,6 +1,5 @@
-package ru.ocupuc.triangle.models.figurs;
+package ru.ocupuc.triangle.models.shapes;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.ocupuc.triangle.FigureType;

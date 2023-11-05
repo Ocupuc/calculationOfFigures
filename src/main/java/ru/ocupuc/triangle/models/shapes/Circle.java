@@ -1,4 +1,4 @@
-package ru.ocupuc.triangle.models.figurs;
+package ru.ocupuc.triangle.models.shapes;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

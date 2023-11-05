@@ -1,8 +1,7 @@
-package ru.ocupuc.triangle.models.impl;
+package ru.ocupuc.triangle.models.shapes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.ocupuc.triangle.models.figurs.Triangle;
 
 import static org.junit.jupiter.api.Assertions.*;
 

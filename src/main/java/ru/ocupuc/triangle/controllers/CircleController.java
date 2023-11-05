@@ -4,7 +4,7 @@ package ru.ocupuc.triangle.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ocupuc.triangle.FigureFactory;
-import ru.ocupuc.triangle.models.figurs.Circle;
+import ru.ocupuc.triangle.models.shapes.Circle;
 
 import java.util.HashMap;
 import java.util.Map;

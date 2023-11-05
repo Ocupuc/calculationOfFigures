@@ -1,14 +1,22 @@
 package ru.ocupuc.triangle.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public abstract class Quadrilateral extends Polygon {
-    public Quadrilateral(double[] sidesLengths) {
-        super(4, sidesLengths);
+@AllArgsConstructor
+public abstract class Quadrilateral extends AbstractFigure {
+
+    private double sideA;
+    private double sideB;
+    private double sideC;
+    private double sideD;
+
+    @Override
+    public double calculatePerimeter() {
+        return sideA+sideB+sideC+sideD;
     }
 }

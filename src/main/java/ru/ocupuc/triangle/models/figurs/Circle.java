@@ -1,14 +1,15 @@
-package ru.ocupuc.triangle.models.impl;
+package ru.ocupuc.triangle.models.figurs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.ocupuc.triangle.models.GeometricFigure;
+import ru.ocupuc.triangle.FigureType;
+import ru.ocupuc.triangle.models.AbstractFigure;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Circle extends GeometricFigure {
+public class Circle extends AbstractFigure {
     private double radius;
 
     public Circle(double radius) {
@@ -26,7 +27,9 @@ public class Circle extends GeometricFigure {
     }
 
     @Override
-    public String identifyFigure() {
-        return "Circle";
+    public FigureType getType() {
+        return FigureType.CIRCLE;
     }
+
+
 }

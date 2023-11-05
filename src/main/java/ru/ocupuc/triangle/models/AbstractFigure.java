@@ -1,15 +1,16 @@
 package ru.ocupuc.triangle.models;
 
 import lombok.*;
+import ru.ocupuc.triangle.FigureType;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class GeometricFigure {
+public abstract class AbstractFigure {
 
     public abstract double calculateArea();
 
     public abstract double calculatePerimeter();
 
-    public abstract String identifyFigure();
+    public abstract FigureType getType();
 }

@@ -2,6 +2,8 @@ package ru.ocupuc.triangle.models.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.ocupuc.triangle.models.figurs.Triangle;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TriangleTest {
@@ -12,10 +14,10 @@ class TriangleTest {
 
     @BeforeEach
     void setUp() {
-        equilateralTriangle = new Triangle(new double[]{2.0, 2.0, 2.0});
-        isoscelesTriangle = new Triangle(new double[]{2.0, 2.0, 3.0});
-        scaleneTriangle = new Triangle(new double[]{2.0, 3.0, 4.0});
-        rightTriangle = new Triangle(new double[]{3.0, 4.0, 5.0});
+        equilateralTriangle = new Triangle(2.0, 2.0, 2.0);
+        isoscelesTriangle = new Triangle(2.0, 2.0, 3.0);
+        scaleneTriangle = new Triangle(2.0, 3.0, 4.0);
+        rightTriangle = new Triangle(3.0, 4.0, 5.0);
     }
 
     @Test
@@ -44,9 +46,9 @@ class TriangleTest {
 
     @Test
     void testIdentifyFigure() {
-        assertEquals("Треугольник", equilateralTriangle.identifyFigure());
-        assertEquals("Треугольник", scaleneTriangle.identifyFigure());
-        assertEquals("Треугольник", rightTriangle.identifyFigure());
+        assertEquals("Треугольник", equilateralTriangle.getType().getName());
+        assertEquals("Треугольник", scaleneTriangle.getType().getName());
+        assertEquals("Треугольник", rightTriangle.getType().getName());
     }
 
     @Test
@@ -87,18 +89,18 @@ class TriangleTest {
     @Test
     void testCalculateCircumscribedCircleArea() {
         // Площадь описанной окружности для равностороннего треугольника
-        double rEquilateralCircum = equilateralTriangle.getSidesLengths()[0] / (Math.sqrt(3));
+        double rEquilateralCircum = equilateralTriangle.getSideA() / (Math.sqrt(3));
         assertEquals(Math.PI * rEquilateralCircum * rEquilateralCircum, equilateralTriangle.calculateCircumscribedCircleArea(), 1e-10);
 
         // Площадь описанной окружности для прямоугольного треугольника
-        double rRightCircum = rightTriangle.getSidesLengths()[2] / 2.0;
+        double rRightCircum = rightTriangle.getSideC() / 2.0;
         assertEquals(Math.PI * rRightCircum * rRightCircum, rightTriangle.calculateCircumscribedCircleArea(), 1e-10);
     }
 
     @Test
     void testCalculateMedianLength() {
         // Длина медианы для стороны c равностороннего треугольника
-        assertEquals(equilateralTriangle.getSidesLengths()[0] * Math.sqrt(3) / 2, equilateralTriangle.calculateMedianLength(2.0, 2.0, 2.0), 1e-10);
+        assertEquals(equilateralTriangle.getSideA() * Math.sqrt(3) / 2, equilateralTriangle.calculateMedianLength(2.0, 2.0, 2.0), 1e-10);
 
         // Длина медианы для стороны c прямоугольного треугольника
         assertEquals(2.5, rightTriangle.calculateMedianLength(3.0, 4.0, 5.0), 1e-10);

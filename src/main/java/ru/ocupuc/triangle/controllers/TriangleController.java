@@ -1,98 +1,44 @@
 package ru.ocupuc.triangle.controllers;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.ocupuc.triangle.FigureFactory;
-import ru.ocupuc.triangle.dto.FigureDTO;
-import ru.ocupuc.triangle.models.GeometricFigure;
-import ru.ocupuc.triangle.models.impl.Triangle;
+import ru.ocupuc.triangle.models.figurs.Triangle;
 
-import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/triangles")
-@Validated
+@RequestMapping("/api/figures")
 public class TriangleController {
 
-    // Эндпоинт для определения типа треугольника
-    @PostMapping("/determineType")
-    public ResponseEntity<?> determineTriangleType(@Valid @RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = createFigureFromDTO(figureDTO);
+    @PostMapping("/triangle")
+    public ResponseEntity<?> calculateTriangleParameters(@RequestBody Map<String, Double> request) {
+        try {
+            double sideA = request.get("sideA");
+            double sideB = request.get("sideB");
+            double sideC = request.get("sideC");
 
-        if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник для определения типа треугольника.");
+            Triangle triangle = FigureFactory.createTriangle(sideA, sideB, sideC);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("area", triangle.calculateArea());
+            response.put("perimeter", triangle.calculatePerimeter());
+            response.put("definition", "Треугольник — это многоугольник с тремя вершинами и тремя сторонами.");
+            response.put("heights", triangle.calculateHeights());
+            response.put("medians", triangle.calculateAllMedians());
+            response.put("bisectors", triangle.calculateAllBisectors());
+            response.put("triangleType", triangle.determineTriangleType());
+            response.put("inscribedCircleArea", triangle.calculateInscribedCircleArea());
+            response.put("circumscribedCircleArea", triangle.calculateCircumscribedCircleArea());
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        Triangle triangle = (Triangle) figure;
-        String type = triangle.determineTriangleType();
-        return ResponseEntity.ok(type);
     }
-
-    // Эндпоинт для расчета площади описанной окружности треугольника
-    @PostMapping("/circumscribedCircleArea")
-    public ResponseEntity<?> calculateCircumscribedCircleArea(@Valid @RequestBody FigureDTO figureDTO) {
-        // Используем приватный метод для создания фигуры
-        GeometricFigure figure = createFigureFromDTO(figureDTO);
-
-        if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый " +
-                    "треугольник для расчета площади описанной окружности треугольника.");
-        }
-
-        Triangle triangle = (Triangle) figure;
-        double area = triangle.calculateCircumscribedCircleArea();
-        return ResponseEntity.ok(area);
-    }
-    // Эндпоинт для расчета площади вписанной окружности треугольника
-    @PostMapping("/calculateInscribedCircleArea")
-    public ResponseEntity<?> calculateInscribedCircleArea(@Valid @RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = createFigureFromDTO(figureDTO);
-
-        if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый " +
-                    "треугольник для расчёта площади вписанной окружности.");
-        }
-
-        Triangle triangle = (Triangle) figure;
-        double inscribedCircleArea = triangle.calculateInscribedCircleArea();
-        return ResponseEntity.ok(inscribedCircleArea);
-    }
-
-    // Эндпоинт для расчета длин медиан треугольника
-    @PostMapping("/calculateMedians")
-    public ResponseEntity<?> calculateMedians(@Valid @RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = createFigureFromDTO(figureDTO);
-
-        if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник для расчета длин медиан треугольника.");
-        }
-
-        Triangle triangle = (Triangle) figure;
-        double[] medians = triangle.calculateAllMedians();
-        return ResponseEntity.ok(medians);
-    }
-
-    // Эндпоинт для расчета длин биссектрис треугольника
-    @PostMapping("/calculateBisectors")
-    public ResponseEntity<?> calculateBisectors(@Valid @RequestBody FigureDTO figureDTO) {
-        GeometricFigure figure = createFigureFromDTO(figureDTO);
-
-        if (!(figure instanceof Triangle)) {
-            return ResponseEntity.badRequest().body("Не допустимый треугольник для расчета длин биссектрис треугольника.");
-        }
-
-        Triangle triangle = (Triangle) figure;
-        double[] bisectors = triangle.calculateAllBisectors();
-        return ResponseEntity.ok(bisectors);
-    }
-
-    // Приватный метод для создания фигуры из DTO
-    private GeometricFigure createFigureFromDTO(FigureDTO figureDTO) {
-        return FigureFactory.createFigure(figureDTO.getType(), figureDTO.getParameters());
-    }
-
 }
+

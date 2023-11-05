@@ -15,11 +15,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class FigureDTO {
 
-    @NotBlank(message = "Тип фигуры не может быть пустым")
+
     private String type;
 
-    @NotNull(message = "Параметры фигуры не могут быть null")
-    @Size(min = 1, message = "Должен быть хотя бы один параметр")
+
     private double[] parameters;
 
 }

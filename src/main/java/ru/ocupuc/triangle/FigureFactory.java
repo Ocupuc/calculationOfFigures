@@ -1,26 +1,49 @@
 package ru.ocupuc.triangle;
 
-import ru.ocupuc.triangle.models.GeometricFigure;
-import ru.ocupuc.triangle.models.impl.Parallelogram;
-import ru.ocupuc.triangle.models.impl.Triangle;
+import ru.ocupuc.triangle.models.figurs.Circle;
+import ru.ocupuc.triangle.models.figurs.Rectangle;
+import ru.ocupuc.triangle.models.figurs.Square;
+import ru.ocupuc.triangle.models.figurs.Triangle;
 
 public class FigureFactory {
 
-    public static GeometricFigure createFigure(String type, double... parameters) {
-        switch (type.toLowerCase()) {
-            case "triangle":
-                // Убедитесь, что для треугольника передано ровно три параметра
-                if (parameters.length == 3) {
-                    return new Triangle(parameters); // Используется один массив, а не три аргумента
-                } else {
-                    throw new IllegalArgumentException("Для треугольника необходимо три параметра.");
-                }
-            case "parallelogram":
+    //Создаем треугольник
+    public static Triangle createTriangle(double sideA, double sideB, double sideC) {
+        validateTriangle(sideA, sideB, sideC);
+        return new Triangle(sideA, sideB, sideC);
+    }
 
-                return new Parallelogram(parameters[0], parameters[1], parameters[2]);
+    // Валидация сторон треугольника
+    private static void validateTriangle(double a, double b, double c) {
+        checkAllPositive(a, b, c);
+        if (a >= b + c || b >= a + c || c >= a + b) {
+            throw new IllegalArgumentException("Сумма двух сторон должна быть больше третьей.");
+        }
+    }
+    // Фабричный метод для создания экземпляра круга
+    public static Circle createCircle(double radius) {
+        checkAllPositive(radius);
+        return new Circle(radius);
+    }
 
-            default:
-                return null;
+    public static Square createSquare(double sideSize) {
+        checkAllPositive(sideSize);
+        return new Square(sideSize);
+    }
+
+
+    public static Rectangle createRectangle(double sideA,double sideB) {
+
+        checkAllPositive(sideA, sideB);
+        return new Rectangle(sideA, sideB);
+    }
+
+
+    private static void checkAllPositive(double... values) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] <= 0) {
+                throw new IllegalArgumentException("Стороны должны быть положительными числами.");
+            }
         }
     }
 }

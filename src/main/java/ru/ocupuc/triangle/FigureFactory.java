@@ -34,22 +34,18 @@ public class FigureFactory {
         return new Rectangle(sideA, sideB);
     }
 
-    // Фабричный метод для создания экземпляра трапеции
-    public static Trapezoid createTrapezoid(double sideA, double sideB, double sideC, double sideD, double height) {
-        checkAllPositive(sideA, sideB, sideC, sideD, height);
-        validateTrapezoid(sideA, sideB, sideC, sideD, height);
-        return new Trapezoid(sideA, sideB, sideC, sideD, height);
+    public static Trapezoid createTrapezoid(double sideB, double sideD, double height) {
+        checkAllPositive(sideB, sideD, height);
+        validateTrapezoidBases(sideB, sideD);
+        return new Trapezoid(sideB, sideD, height);
     }
 
-    // Валидация параметров трапеции
-    private static void validateTrapezoid(double a, double b, double c, double d, double h) {
-        if (!(a + d > b + c && b + c > Math.abs(a - d))) {
-            throw new IllegalArgumentException("Для трапеции сумма длин противоположных сторон должна быть больше суммы двух других сторон.");
-        }
-        if (h >= a || h >= b || h >= c || h >= d) {
-            throw new IllegalArgumentException("Высота должна быть меньше длины любой из сторон трапеции.");
+    private static void validateTrapezoidBases(double sideB, double sideD) {
+        if (sideB == sideD) {
+            throw new IllegalArgumentException("Основания трапеции не должны быть равны.");
         }
     }
+
 
     // Фабричный метод для создания экземпляра параллелограмма
     public static Parallelogram createParallelogram(double sideA, double sideB, double height) {

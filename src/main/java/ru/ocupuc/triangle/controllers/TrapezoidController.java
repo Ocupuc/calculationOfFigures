@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ocupuc.triangle.FigureFactory;
 import ru.ocupuc.triangle.models.shapes.Trapezoid;
 
 import java.util.HashMap;
@@ -18,17 +19,17 @@ public class TrapezoidController {
     @PostMapping("/trapezoid")
     public ResponseEntity<?> calculateTrapezoidParameters(@RequestBody Map<String, Double> request) {
         try {
-            double sideA = request.get("sideA");
             double sideB = request.get("sideB");
-            double sideC = request.get("sideC");
             double sideD = request.get("sideD");
             double height = request.get("height");
-            Trapezoid trapezoid = new Trapezoid(sideA, sideB, sideC, sideD, height);
+            Trapezoid trapezoid = FigureFactory.createTrapezoid(sideB, sideD, height);
 
+            // Создание объекта для ответа
             Map<String, String> response = new HashMap<>();
             response.put("area", String.format("%.2f", trapezoid.calculateArea()));
             response.put("perimeter", String.format("%.2f", trapezoid.calculatePerimeter()));
-            response.put("description", "Трапеция — это четырехугольник, у которого две стороны параллельны.");
+            response.put("description", "Трапеция — четырехугольник с двумя параллельными и двумя не параллельными сторонами.");
+            response.put("side", String.format("%.2f", trapezoid.calculateSide()));
 
             return ResponseEntity.ok(response); // Возвращает объект ответа в формате JSON
         } catch (IllegalArgumentException e) {
